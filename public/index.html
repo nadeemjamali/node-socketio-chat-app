@@ -9,5 +9,15 @@
         <p>
             Welcome to the html file
         </p>
+        <script src='/socket.io/socket.io.js'></script>
+        <script >
+            var socket = io();
+            socket.on('connect', ()=>{
+                console.log('connected to the server');
+            });
+            socket.on('disconnect', ()=>{
+                console.log('server disconnected');
+            });
+        </script>
     </body>
 </html>
