@@ -1,5 +1,5 @@
 var socket = io();
-var userName = undefined;
+
 
 socket.on('connect', function(){    
     socket.on('newMessage', function(msg){
@@ -9,15 +9,27 @@ socket.on('connect', function(){
     socket.on('newUser', function(usr){
         console.log('New User joind the chat: ', JSON.stringify(usr, undefined, 2));
     });
-    
+
+    var user = {        
+        set: (n)=>{
+            this.name = n;
+        },
+        get: ()=>{
+            return this.name;
+        }
+    };
+
     setUser = function(userName){
-        userName = userName;        
-        socket.emit('createUser', {userName});        
-    }
+        user.set(userName);
+        socket.emit('createUser', {userName: user.get()});        
+    };
     
-    sendMessage = function(text){
-        if(userName){
-            socket.emit('createMessage', {userName,text});
+    sendMessage = function(text){        
+        if(user.get()){
+            socket.emit('createMessage', {userName:user.get(),text});
+        }
+        else{
+            console.log(`Error: please set userName first!`);
         }
     };
     console.log('connected to the server');    
