@@ -45,10 +45,12 @@ socket.on('disconnect', function(){
 
 $('#message-form').on('submit', function(e){
     e.preventDefault();
+
     var text = $('[name=message]').val();
     var uname = $('#txt-user-name').val();
     socket.emit('createMessage', {userName: uname, text}, function(data){
         appendMessage('You', text);
+        $('[name=message]').val('');
     });
 });
 
@@ -57,12 +59,15 @@ locationButton.on('click',function(){
     if(!navigator.geolocation){
         return alert('Geolocation not found');
     }
+    locationButton.attr('disabled', 'disabled').text('sending locatin...');
     navigator.geolocation.getCurrentPosition(function(position){
+        locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('createLocationMessage',{
             longitude: position.coords.longitude,
             latitude: position.coords.latitude
         });
     },function(err){
+        locationButton.removeAttr('disabled').text('Send Location');
         console.log('Unable to fetch the geo location');
     });
 });
