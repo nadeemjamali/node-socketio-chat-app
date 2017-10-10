@@ -5,17 +5,14 @@ socket.on('connect', function(){
     console.log('connected to the server');    
 });
 
-function appendMessage(from, text, createdAt, isLeft){
-    var li = $('<li></li>');
+function appendMessage(from, text, createdAt){
     var formatted = moment(createdAt).format('h:mm a');
-    li.text(`${from}, ${formatted} : ${text}`);
-    if(isLeft === true){
-        li.addClass('blueText');
-    }else{
-        li.addClass('redText');
-    }
+    var template = $('#message-template').html();
+    var html = Mustache.render(template, {
+        from, text, createdAt: formatted
+    });
 
-    $('#messages').append(li);
+    $('#messages').append(html);
 }
 
 socket.on('newMessage', function(msg){
@@ -24,14 +21,14 @@ socket.on('newMessage', function(msg){
 });
 
 function appendLocationMessage(from, url, createdAt){
-    var li = $('<li></li>');
-    var a = $('<a target="_blank">My Current Location</a>');
-    a.attr('href',url);
+    
     var formatted = moment(createdAt).format('h:mm a');
-    li.text(`${from}, ${formatted} : `);        
-    li.append(a);
-    li.addClass('blueText');
-    $('#messages').append(li);
+    var template = $('#location-message-template').html();
+    var html = Mustache.render(template, {
+        from, url, createdAt: formatted
+    });
+
+    $('#messages').append(html);
 }
 
 
