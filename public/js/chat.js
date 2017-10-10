@@ -18,6 +18,18 @@ socket.on('connect', function(){
     
 });
 
+socket.on('updateUserList', function(users){
+    console.log('Users List: ', users);
+    var ol = $('<ol></ol>');
+    users.forEach((u) => {
+        var li = $('<li></li>');
+        li.text(u);
+        ol.append(li);
+    });
+    $('#users').empty();
+    $('#users').append(ol);
+});
+
 function scrollToBottom(){
     //selectors
     var messages = $('#messages');
@@ -47,15 +59,15 @@ function appendMessage(from, text, createdAt){
 
 socket.on('newMessage', function(msg){
     console.log('New message received.', msg);
-    appendMessage(msg.from, msg.text, msg.createdAt, true);    
+    appendMessage(msg.from, msg.text, msg.createdAt);    
 });
 
 function appendLocationMessage(from, url, createdAt){
     
     var formatted = moment(createdAt).format('h:mm a');
     var template = $('#location-message-template').html();
-    var html = Mustache.render(template, {
-        from, url, createdAt: formatted
+    var html = Mustache.render(template, {from,
+    url, createdAt: formatted
     });
 
     $('#messages').append(html);
@@ -77,8 +89,8 @@ $('#message-form').on('submit', function(e){
     e.preventDefault();
 
     var text = $('[name=message]').val();
-    var uname = 'User';
-    socket.emit('createMessage', {userName: uname, text}, function(data){
+    
+    socket.emit('createMessage', {text}, function(data){
         appendMessage('You', text, data.createdAt);
         $('[name=message]').val('');
     });
