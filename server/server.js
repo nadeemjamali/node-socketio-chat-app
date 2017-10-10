@@ -18,21 +18,26 @@ io.on('connection', (socket)=>{
     console.log('new user connected.');        
     
     socket.on('join',(params, callback)=>{
+
         if(!isRealString(params.name) || !isRealString(params.room)){
             callback('Name and Room are required.');
         }
 
+        socket.join(params.room);
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',`${params.name} has joined.`));
+
         callback();
     });
 
-    socket.on('createUser', (user) => {
+    // socket.on('createUser', (user) => {
            
-        socket.broadcast.emit('newMessage', generateMessage('Admin',`${user.userName} joined the chat.`));
-        // socket.broadcast.emit('newUser', {
-        //     userName: usr.userName,
-        //     joinedAt: new Date().getTime()
-        // });
-    });
+        
+    //     // socket.broadcast.emit('newUser', {
+    //     //     userName: usr.userName,
+    //     //     joinedAt: new Date().getTime()
+    //     // });
+    // });
     
     socket.on('createMessage', (msg, callback)=>{        
         socket.broadcast.emit('newMessage', generateMessage(msg.userName,msg.text));        
